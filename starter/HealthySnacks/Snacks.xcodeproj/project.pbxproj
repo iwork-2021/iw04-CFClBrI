@@ -12,6 +12,9 @@
 		7BF6C662204818EC00606217 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BF6C661204818EC00606217 /* ViewController.swift */; };
 		7BF6C665204818EC00606217 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7BF6C663204818EC00606217 /* Main.storyboard */; };
 		7BF6C667204818ED00606217 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7BF6C666204818ED00606217 /* Assets.xcassets */; };
+		7C2A85BF2758BD09008C754E /* SnacksImageClassifier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 7C2A85BE2758BD08008C754E /* SnacksImageClassifier.mlmodel */; };
+		7C81D526275F81B8009480FA /* HealthySnacksClassifier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 7C81D525275F81B8009480FA /* HealthySnacksClassifier.mlmodel */; };
+		7CA9EFE6275F5FF400260125 /* VideoCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CA9EFE5275F5FF400260125 /* VideoCapture.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +25,9 @@
 		7BF6C664204818EC00606217 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		7BF6C666204818ED00606217 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7BF6C66B204818ED00606217 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7C2A85BE2758BD08008C754E /* SnacksImageClassifier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; name = SnacksImageClassifier.mlmodel; path = ../SnacksImageClassifier.mlmodel; sourceTree = "<group>"; };
+		7C81D525275F81B8009480FA /* HealthySnacksClassifier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; name = HealthySnacksClassifier.mlmodel; path = ../HealthySnacksClassifier.mlmodel; sourceTree = "<group>"; };
+		7CA9EFE5275F5FF400260125 /* VideoCapture.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VideoCapture.swift; path = ../../../.Trash/VideoCapture.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,6 +44,8 @@
 		7BF6C653204818EC00606217 = {
 			isa = PBXGroup;
 			children = (
+				7C2A85BE2758BD08008C754E /* SnacksImageClassifier.mlmodel */,
+				7C81D525275F81B8009480FA /* HealthySnacksClassifier.mlmodel */,
 				7BF6C65E204818EC00606217 /* Snacks */,
 				7BF6C65D204818EC00606217 /* Products */,
 			);
@@ -55,6 +63,7 @@
 			isa = PBXGroup;
 			children = (
 				7BF6C65F204818EC00606217 /* AppDelegate.swift */,
+				7CA9EFE5275F5FF400260125 /* VideoCapture.swift */,
 				7BF6C661204818EC00606217 /* ViewController.swift */,
 				7B11BA822048333700D790AA /* CGImagePropertyOrientation.swift */,
 				7BF6C663204818EC00606217 /* Main.storyboard */,
@@ -134,9 +143,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7C2A85BF2758BD09008C754E /* SnacksImageClassifier.mlmodel in Sources */,
 				7BF6C662204818EC00606217 /* ViewController.swift in Sources */,
 				7BF6C660204818EC00606217 /* AppDelegate.swift in Sources */,
+				7CA9EFE6275F5FF400260125 /* VideoCapture.swift in Sources */,
 				7B11BA832048333700D790AA /* CGImagePropertyOrientation.swift in Sources */,
+				7C81D526275F81B8009480FA /* HealthySnacksClassifier.mlmodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -273,7 +285,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = E98L3B5R56;
+				DEVELOPMENT_TEAM = 254S5DFDDX;
 				INFOPLIST_FILE = Snacks/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -292,7 +304,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = E98L3B5R56;
+				DEVELOPMENT_TEAM = 254S5DFDDX;
 				INFOPLIST_FILE = Snacks/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (

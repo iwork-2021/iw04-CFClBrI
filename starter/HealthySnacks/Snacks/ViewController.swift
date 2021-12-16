@@ -27,6 +27,7 @@
 /// THE SOFTWARE.
 
 import UIKit
+import Vision
 
 class ViewController: UIViewController {
   
@@ -36,9 +37,86 @@ class ViewController: UIViewController {
   @IBOutlet var resultsView: UIView!
   @IBOutlet var resultsLabel: UILabel!
   @IBOutlet var resultsConstraint: NSLayoutConstraint!
+    
+    let semphore = DispatchSemaphore(value: ViewController.maxInflightBuffer)
+    var inflightBuffer = 0
+    static let maxInflightBuffer = 2
+    var firstTime = true
 
-  var firstTime = true
 
+    lazy var ImgClassificationRequest: VNCoreMLRequest = {
+        do {
+            let classifier = try SnacksImageClassifier(configuration: MLModelConfiguration())
+            let model = try VNCoreMLModel(for: classifier.model)
+            let request = VNCoreMLRequest(model: model, completionHandler: {
+                [weak self] request, error in
+                self?.processImgObservations(for: request, error: error)
+            })
+            request.imageCropAndScaleOption = .centerCrop
+            return request
+        }
+        catch {
+            fatalError("Failed to create image classification request")
+        }
+    }()
+    
+    lazy var healthyClassificationRequest: VNCoreMLRequest = {
+        do {
+            let classifier = try HealthySnacksClassifier(configuration: MLModelConfiguration())
+            let model = try VNCoreMLModel(for: classifier.model)
+            let request = VNCoreMLRequest(model: model, completionHandler: {
+                [weak self] request, error in
+                self?.processHealthyObservations(for: request, error: error)
+            })
+            request.imageCropAndScaleOption = .centerCrop
+            return request
+        }
+        catch {
+            fatalError("Failed to create image classification request")
+        }
+    }()
+    
+    func processHealthyObservations(for request: VNRequest, error: Error?) {
+        if let results = request.results as? [VNClassificationObservation] {
+            if results.isEmpty {
+                self.resultsLabel.text! += "nothing found, so I can't tell you whether it is healthy"
+            }
+            else {
+                print(results)
+                if results[0].confidence > 0.9 {
+                    self.resultsLabel.text! += String(format: "I'm sure it is %@\nwith a credibility of %.1f%%", results[0].identifier, results[0].confidence * 100)
+                }
+                else {
+                    self.resultsLabel.text! += String(format: "maybe it is %@? I'm not sure", results[0].identifier)
+                }
+            }
+        }
+        else if let error = error {
+            self.resultsLabel.text! += "an error is encountered: \(error.localizedDescription)"
+        }
+        self.showResultsView()
+    }
+    
+    func processImgObservations(for request: VNRequest, error: Error?) {
+        if let results = request.results as? [VNClassificationObservation] {
+            if results.isEmpty {
+                self.resultsLabel.text = "nothing found, so I can't tell you what it is\n"
+            }
+            else {
+                if results[0].confidence > 0.9 {
+                    self.resultsLabel.text = String(format: "I'm sure it is a/an %@\nwith a credibility of %.1f%%\n", results[0].identifier, results[0].confidence * 100)
+                }
+                else {
+                    self.resultsLabel.text = String(format: "maybe it is a/an %@? I'm not sure\n", results[0].identifier)
+                }
+            }
+        }
+        else if let error = error {
+            self.resultsLabel.text = "an error is encountered: \(error.localizedDescription)\n"
+        }
+    }
+    
+    
   override func viewDidLoad() {
     super.viewDidLoad()
     cameraButton.isEnabled = UIImagePickerController.isSourceTypeAvailable(.camera)
@@ -95,8 +173,27 @@ class ViewController: UIViewController {
     }
   }
 
-  func classify(image: UIImage) {
+    func classify(image: UIImage) {
+      let cgImage = image.cgImage!
+      DispatchQueue.main.async {
+          let handler = VNImageRequestHandler(cgImage: cgImage)
+          do {
+              try handler.perform([self.ImgClassificationRequest])
+              try handler.perform([self.healthyClassificationRequest])
+          } catch {
+              print("Failed to perform classification: \(error)")
+          }
+          self.semphore.signal()
+      }
   }
+
+}
+
+
+extension ViewController: VideoCaptureDelegate {
+    func videoCapture(capture: VideoCapture, didCaptureVideoFrame sampleBuffer: CMSampleBuffer) {
+        self.classify(sampleBuffer: sampleBuffer)
+    }
 }
 
 extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -109,3 +206,29 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
     classify(image: image)
   }
 }
+
+extension ViewController {
+    func classify(sampleBuffer: CMSampleBuffer) {
+            if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
+                semphore.wait()
+                inflightBuffer += 1
+                if inflightBuffer >= ViewController.maxInflightBuffer {
+                    inflightBuffer = 0
+                }
+                DispatchQueue.main.async {
+                    let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer)
+                    do {
+                        try handler.perform([self.ImgClassificationRequest])
+                        try handler.perform([self.healthyClassificationRequest])
+                    } catch {
+                        print("Failed to perform classification: \(error)")
+                    }
+                    self.semphore.signal()
+                }
+                
+            } else {
+                print("Create pixel buffer failed")
+            }
+        }
+}
+ 
